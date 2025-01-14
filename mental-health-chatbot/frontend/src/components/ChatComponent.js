@@ -1,49 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import './ChatInterface.css';
 
-const ChatComponent = () => {
+const ChatInterface = () => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
 
-    useEffect(() => {
-        fetchMessages();
-    }, []);
+    const handleSend = async () => {
+        if (input.trim() === '') return;
 
-    const fetchMessages = async () => {
-        const response = await axios.get('/api/chat');
-        setMessages(response.data);
-    };
+        const userMessage = { sender: 'user', text: input };
+        setMessages([...messages, userMessage]);
 
-    const sendMessage = async (e) => {
-        e.preventDefault();
-        if (input.trim()) {
-            const newMessage = { message: input };
-            await axios.post('/api/chat', newMessage);
-            setInput('');
-            fetchMessages();
+        try {
+            const response = await axios.post('http://localhost:5001/chat', { message: input });
+            const botMessage = { sender: 'bot', text: response.data.reply };
+            setMessages([...messages, userMessage, botMessage]);
+        } catch (error) {
+            console.error('Error sending message:', error);
         }
+
+        setInput('');
     };
 
     return (
-        <div>
-            <div className="chat-window">
+        <div className="chat-container">
+            <div className="chat-box">
                 {messages.map((msg, index) => (
-                    <div key={index} className="message">
-                        <p>{msg.message}</p>
+                    <div key={index} className={`chat-message ${msg.sender}`}>
+                        {msg.text}
                     </div>
                 ))}
             </div>
-            <form onSubmit={sendMessage}>
+            <div className="chat-input">
                 <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your message..."
                 />
-                <button type="submit">Send</button>
-            </form>
+                <button onClick={handleSend}>Send</button>
+            </div>
         </div>
     );
 };
 
-export default ChatComponent;
+export default ChatInterface;

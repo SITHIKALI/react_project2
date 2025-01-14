@@ -1,17 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import ChatComponent from './components/ChatComponent';
+import ChatInterface from './components/ChatInterface';
 
-function App() {
-  return (
-    <Router>
-      <div className="App">
-        <Switch>
-          <Route path="/" component={ChatComponent} />
-        </Switch>
-      </div>
-    </Router>
-  );
-}
+const App = () => {
+    return (
+        <div>
+            <h1>Mental Health Chatbot</h1>
+            <ChatInterface />
+        </div>
+    );
+};
 
 export default App;
